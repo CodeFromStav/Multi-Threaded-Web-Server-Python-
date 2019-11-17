@@ -87,7 +87,7 @@ def http_handler(request):
         version = ["HTTP/1.0", "HTTP/1.1"]
         response = "HTTP/1.1 2-- OK\r\nHost: localhost\r\n<!DOCTYPE html><body><h1>Simple Web Server</h1><p>I love computer networks!</p></body></html>/r/n"
         if ( METHOD == request[1] or METHOD == request[2] or METHOD == request[3] or METHOD == request[4] or METHOD == request[5] ):         
-                return "501, Not Implemented_TESSTT "
+                return "501, Not Implemented "
         
         elif( URL == "/" and VERSION == version[0] ):
                 return response
@@ -96,16 +96,55 @@ def http_handler(request):
                 return "200, Success "                                                                        
                                                                         
         else:
-                return "404 Not FoundDD"
+                return "404 Not Found "
                                  
        	                        
         if ( len(request) == 3 ):
                 pass
         else:
-                return "400 Bad Request"
-                                        
-                                        
-                        
+                return "400 Bad Request "
+
+def multiprocessing_hadler():
+        #Create Child Process(Fork)
+            
+
+         #Read data from client, ensure recieve request containing valid request line:
+            #<METHOD><URL><HTTP VERSION>
+            #ex: GET http://www.cs.princeton.edu/index.html HTTP/1.0
+         
+         #Check Header Format:
+            #<HEADER NAME>:<HEADER VALUE>
+
+
+         #If request is invalid from client, output "Bad Request" (400)
+
+         #If request has valid HTTP method but not a <METHOD> (GET), output "Not Implemented" (501)
+
+         #If headers not properly formatted for parsing, output type-400 message
+
+         
+         
+         
+   #Create function that parses HTTP Requests to ensure they have a valid request line
+      #{
+
+      #If request is invalid from client, output "Bad Request" (400)
+
+      #If request has valid HTTP method but not a <METHOD> (GET), output "Not Implemented" (501)
+
+      #If headers not properly formatted for parsing, output type-400 message
+      #}
+
+   #Once proxy recieves valid HTTP Request (after parsed), need to parse requested URL
+      #must be host, port, path
+
+         #if hostname in URL does not have port specified, default HTTP port to 80
+
+
+   #If response received, return response message as-is to client via appropriate socket
+
+
+
 if __name__ == "__main__":
         sys.exit(main())
         
