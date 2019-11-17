@@ -1,7 +1,14 @@
 #Server program that echos any message that is sent
 import socket
+import threading
+import argparse
+import sys
+import itertools
+import socket
 import multiprocessing
 from multiprocessing import Pool
+
+
 
 HOST = '127.0.0.1' #local host IP
 PORT = 2080 #Generall use any large number > 1023
@@ -13,69 +20,66 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s: #socket(IPV4_Flag, 
 
    #API: bind()
    s.bind((HOST, PORT))
-   print("Socket binded to port ", PORT + "\n")
+   print("Socket binded to port ", PORT)
    #API: listen()
    s.listen()
    print("Socket is listening... \n")
 
-   #Connection
-   connection_socket, client_address = server_socket.accept()
-   p = threading.Thread(name = str(client_address), target = http_handler, args = (connection_socket, client_address))
-   
-   p.setDaemon(True)
-   p.start()
-
-   #API: connect()
-   conn, addr = s.accept() #passing to accept
-   print("Accepted address \n")
-
-   with conn:
-      print('Connected by ', addr)
-      #API: recv()
-      while True: 
-         #Handle service request (request for information/something)
-
-
-         data = conn.recv(1024)
-         if not data: #if no data sent
-            break
-         #API: send()
-         conn.sendall(data)
-      s.close()
-         
+   while True: 
+      
+      #Handle service request (request for information/something)
+      #Connection
+         connection_socket, client_address = s.accept()
+         p = threading.Thread(name = str(client_address), target = http_handler, args = (connection_socket, client_address))
+         p.setDaemon(True)
+         p.start()
+         p.join()  
+      
+   s.close()
+       
       #handles concurrent requests by forking a process for each new client request
-def http_handler(connection_socket, client_address): #nested function to check valid request line
-
-         req_lines = request.splitlines()
-         req_lines = req_lines[0].split(" ")
-
-         METHOD = req_lines[0] 
-         URL = req_lines[1]
-         VERSION = req_lines[2] 
-                                
-         request = ["GET", "POST", "HEAD", "PUT", "PATCH", "DELETE"]
-         version = ["HTTP/1.0", "HTTP/1.1"]
-         response = "HTTP/1.1 2-- OK\r\nHost: localhost\r\n<!DOCTYPE html><body><h1>Simple Web Server</h1><p>I love computer networks!</p></body></html>/r/n"
-        
-         if ( METHOD == request[1] or METHOD == request[2] or METHOD == request[3] or METHOD == request[4] or METHOD == request[5] ):         
-                  return "501, Not Implemented "
-         
-         elif( URL == "/" and VERSION == version[0] ):
-                  return response
-
-         elif( URL == "/" and VERSION == version[1] ):
-                  return "200, Success "                                                                        
-                                                                           
+def http_handler(connection_socket, client_address): 
+      
+   while True:
+      try:
+         data = connection_socket.recv(1024)
+         if not data: #if no data sent
+               break
          else:
-                  return "404 Not Found "
-                                    
-                                    
-         if ( len(request) == 3 ):
-                  pass
-         else:
-                  return "400 Bad Request "
+               connection_socket.sendall(connection_socket.data)
+      except Exception as e:
+         print(e)
+         break
 
 
+   req_lines = client_address.splitlines() #may need to change request to client_address
+   req_lines = req_lines[0].split(" ")
+
+   METHOD = req_lines[0] 
+   URL = req_lines[1]
+   VERSION = req_lines[2] 
+                           
+   request = ["GET", "POST", "HEAD", "PUT", "PATCH", "DELETE"]
+   version = ["HTTP/1.0", "HTTP/1.1"]
+   response = "HTTP/1.1 2-- OK\r\nHost: localhost\r\n<!DOCTYPE html><body><h1>Simple Web Server</h1><p>I love computer networks!</p></body></html>/r/n"
+   
+   #if METHOD in request[0:]:   means everything but 0
+   if ( METHOD == request[1] or METHOD == request[2] or METHOD == request[3] or METHOD == request[4] or METHOD == request[5] ):         
+            return "501, Not Implemented "
+   
+   elif( URL == "/" and VERSION == version[0] ):
+            return response
+
+   elif( URL == "/" and VERSION == version[1] ):
+            return "200, Success "                                                                        
+                                                                     
+   else:
+            return "404 Not Found "
+                                                           
+   if ( len(request) == 3 ):
+            pass
+   else:
+            return "400 Bad Request "
 
 
 

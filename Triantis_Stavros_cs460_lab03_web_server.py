@@ -4,7 +4,6 @@ import argparse
 import sys
 import itertools
 import socket
-import argparse
 import threading
 import multiprocessing
 from multiprocessing import Pool
